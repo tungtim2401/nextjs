@@ -1,5 +1,8 @@
 .marquee-content {
   animation: marquee 10s linear infinite;
+  &:hover{
+    animation-play-state: paused;
+  }
 }
 
 

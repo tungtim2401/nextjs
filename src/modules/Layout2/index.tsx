@@ -1,14 +1,13 @@
 
+import Header from "./components/Header";
 import { PROJECTS } from "./constant";
 import StickyHeaderLayout from "@/common/StickyHeaderLayout";
 
 const Layout2 = () => {
   return (
     <div>
-      <StickyHeaderLayout
-        content={PROJECTS}
-        idContent={`p`}
-      />
+      <Header />
+      <StickyHeaderLayout content={PROJECTS} idContent={`p`} />
     </div>
   );
 };

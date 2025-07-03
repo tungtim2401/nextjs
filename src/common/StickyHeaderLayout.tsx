@@ -4,8 +4,6 @@ import lodash from "lodash";
 import { useEffect, useRef, useState } from "react";
 import { ContentItem } from "./interface";
 
-
-
 interface StickyHeaderLayoutProps {
   content: ContentItem[];
   idContent: string | number;
@@ -24,24 +22,20 @@ const StickyHeaderLayout = ({
       threshold: 0,
     };
 
-    let lastY = 0;
-
+    const lastPositions = new Map<Element, number>();
     const callback = (entries: IntersectionObserverEntry[]) => {
       entries.forEach((entry) => {
         const target = entry.target as HTMLElement;
         const id = target.dataset.id;
         const type = target.dataset.type;
         const currentY = entry.boundingClientRect.top;
+        const lastY = lastPositions.get(target) ?? currentY;
         const goingUp = currentY > lastY; // scroll lên
-        if (entry.isIntersecting && goingUp) {
-          console.log(`${id} vừa xuất hiện khi scroll lên`);
-        }
-        lastY = currentY;
 
+        lastPositions.set(target, currentY);
         if (type === "p" && !entry.isIntersecting && currentY < 0) {
           const currentContent = content.find((s) => s.name === id);
 
-          console.log("ppppp id", id);
           if (currentContent) setStickyHeader(currentContent.name);
         }
 
@@ -49,16 +43,10 @@ const StickyHeaderLayout = ({
         if (type === "c" && !entry.isIntersecting && currentY < 0) {
           setStickyHeader(null);
         }
-
         // Nếu scroll lên và content hiện lại → lùi lại header
-        if (
-          type === "c" &&
-          entry.isIntersecting &&
-          entry.boundingClientRect.top > 0
-        ) {
-          const contentIndex = content.findIndex((s) => s.c === id);
-          const prev = content[contentIndex];
-          if (prev) setStickyHeader(prev.name);
+        if (entry.isIntersecting && goingUp && type === "c") {
+          const currentContent = content.find((s) => s.description === id);
+          setStickyHeader(currentContent ? currentContent.name : null);
         }
       });
     };
